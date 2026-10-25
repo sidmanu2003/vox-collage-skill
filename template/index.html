@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920, initial-scale=1.0" />
+    <title>Zero-Credit Vox Animation Skill | SIDमनु TECH</title>
+
+    <!-- Google Fonts: Poppins, Playfair Display, JetBrains Mono, Archivo Narrow -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=JetBrains+Mono:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Poppins:wght@500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP Master -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --paper-bg: #FAF6EE;
+        --paper-dark: #ECE4D4;
+        --ink: #111827;
+        --crimson: #D9352B;
+        --electric-yellow: #FACC15;
+      }
+
+      body, html {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: 'Poppins', sans-serif;
+        color: var(--ink);
+      }
+
+      #viewport {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+      }
+
+      /* STOP-MOTION GRAIN FILTER OVERLAY */
+      #grain {
+        position: absolute;
+        inset: -60px;
+        pointer-events: none;
+        mix-blend-mode: multiply;
+        opacity: 0.42;
+        z-index: 95;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0 0.33 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      /* TOP BRAND DOCK */
+      .top-dock {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        right: 60px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 100;
+      }
+
+      .brand-pill {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #111827;
+        padding: 12px 28px;
+        border-radius: 999px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .brand-logo-img {
+        height: 36px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .brand-name {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #ffffff;
+      }
+
+      .meta-tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: var(--crimson);
+        padding: 10px 24px;
+        border-radius: 999px;
+        box-shadow: 0 6px 15px rgba(217, 53, 43, 0.3);
+      }
+
+      /* SUB-BADGE PILL */
+      .sub-badge {
+        position: absolute;
+        top: 175px;
+        left: 60px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #ffffff;
+        border: 2px solid #e5e7eb;
+        padding: 8px 22px;
+        border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 20px;
+        font-weight: 800;
+        color: #111827;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        z-index: 90;
+      }
+
+      .badge-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: var(--crimson);
+      }
+
+      /* TOP HEADLINES CONTAINER */
+      .headline-container {
+        position: absolute;
+        top: 245px;
+        left: 60px;
+        right: 60px;
+        height: 160px;
+        z-index: 90;
+      }
+
+      .headline {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        font-size: 48px;
+        font-weight: 900;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        text-transform: uppercase;
+        color: #111827;
+      }
+
+      .headline span {
+        color: var(--crimson);
+      }
+
+      .headline em {
+        font-style: normal;
+        background: var(--electric-yellow);
+        padding: 2px 12px;
+        border-radius: 6px;
+      }
+
+      /* MAIN STAGE CONTAINER */
+      .stage-wrap {
+        position: absolute;
+        top: 420px;
+        left: 60px;
+        width: 960px;
+        height: 1200px;
+        border-radius: 36px;
+        background: #F4EFE6;
+        border: 3px solid #E5DFD3;
+        box-shadow: 
+          0 25px 60px -15px rgba(0, 0, 0, 0.25),
+          inset 0 0 40px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        z-index: 80;
+      }
+
+      .scene-layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      /* VOX CUTOUT & PAPER STYLING */
+      .cut {
+        position: absolute;
+        display: block;
+        filter: 
+          drop-shadow(0 6px 0 #ffffff) 
+          drop-shadow(0 -6px 0 #ffffff) 
+          drop-shadow(6px 0 0 #ffffff) 
+          drop-shadow(-6px 0 0 #ffffff)
+          drop-shadow(0 20px 30px rgba(0, 0, 0, 0.38));
+        pointer-events: none;
+      }
+
+      .red-sun {
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        background: var(--crimson);
+      }
+
+      .stamp {
+        position: absolute;
+        border: 4px dashed var(--crimson);
+        color: var(--crimson);
+        padding: 12px 28px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 26px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 25px rgba(217, 53, 43, 0.25);
+        z-index: 35;
+      }
+
+      .news-strip {
+        position: absolute;
+        padding: 14px 22px;
+        background: #E9E3D3;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 1.35;
+        color: #2A2622;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        z-index: 20;
+      }
+
+      .card-sheet {
+        position: absolute;
+        background: #ffffff;
+        border: 2px solid #E5DFD3;
+        padding: 32px;
+        border-radius: 20px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px;
+        line-height: 1.6;
+        color: #111827;
+        z-index: 25;
+      }
+
+      .tag-pill {
+        position: absolute;
+        padding: 10px 22px;
+        background: #111827;
+        color: #ffffff;
+        font-family: 'Archivo Narrow', sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        text-transform: uppercase;
+        border-radius: 8px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        z-index: 30;
+      }
+
+      .tag-pill.yellow {
+        background: var(--electric-yellow);
+        color: #111827;
+      }
+
+      .tag-pill.crimson {
+        background: var(--crimson);
+        color: #ffffff;
+      }
+
+      .highlighter {
+        background: linear-gradient(104deg, rgba(250, 204, 21, 0) 0.9%, rgba(250, 204, 21, 1) 2.4%, rgba(250, 204, 21, 0.9) 95%, rgba(250, 204, 21, 0) 100%);
+        padding: 2px 10px;
+        border-radius: 4px;
+        font-weight: 800;
+      }
+
+      .mk-path {
+        fill: none;
+        stroke: var(--crimson);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* CTA SCREEN (SCENE 6) */
+      .cta-screen {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 40%, #1E293B 0%, #0F172A 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 40px;
+        text-align: center;
+        z-index: 50;
+      }
+
+      .cta-hook-label {
+        font-size: 42px;
+        font-weight: 800;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+      }
+
+      .cta-hook-label em {
+        color: #ffffff;
+        font-style: normal;
+      }
+
+      .comment-pill-btn {
+        background: #ffffff;
+        color: #000000;
+        padding: 26px 64px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+        margin-bottom: 40px;
+      }
+
+      .comment-text {
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+      }
+
+      .vox-badge {
+        background: var(--electric-yellow);
+        color: #000000;
+        font-size: 40px;
+        font-weight: 900;
+        padding: 6px 28px;
+        border-radius: 999px;
+        box-shadow: 0 4px 15px rgba(250, 204, 21, 0.5);
+      }
+
+      .github-pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 14px 32px;
+        border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 24px;
+        font-weight: 700;
+        color: #38bdf8;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .github-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px #22c55e;
+      }
+
+      /* BOTTOM SUBTITLES */
+      .subtitle-dock {
+        position: absolute;
+        bottom: 80px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+
+      .subtitle-box {
+        background: #111827;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 18px 36px;
+        border-radius: 24px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-align: center;
+        max-width: 960px;
+        color: #ffffff;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      }
+
+      .subtitle-box .highlight {
+        color: var(--electric-yellow);
+        font-weight: 800;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="viewport" data-composition-id="vox-reel" data-width="1080" data-height="1920" data-fps="60" data-duration="40.00" data-layout-allow-overflow data-layout-allow-overlap data-layout-allow-occlusion>
+      <!-- MASTER AUDIO (ElevenLabs Sid Voice) -->
+      <audio id="master-voiceover" src="assets/voiceover.mp3" data-start="0" data-duration="40.00"></audio>
+
+      <!-- STOP-MOTION PAPER GRAIN (Active across full timeline) -->
+      <div id="grain" data-layout-ignore></div>
+
+      <!-- TOP BRAND DOCK -->
+      <div class="top-dock">
+        <div class="brand-pill">
+          <img src="assets/logo.png" alt="SIDमनु TECH" class="brand-logo-img" />
+          <span class="brand-name">SIDमनु TECH</span>
+        </div>
+        <div class="meta-tag">OPEN SOURCE</div>
+      </div>
+
+      <!-- SUB-BADGE -->
+      <div class="sub-badge">
+        <span class="badge-dot"></span>
+        <span id="badge-text">VOX ANIMATION ENGINE</span>
+      </div>
+
+      <!-- HEADLINE LAYER -->
+      <div class="headline-container">
+        <!-- Scene 1 Headline -->
+        <div class="headline" id="hl-1" style="opacity: 0; transform: translateY(20px);">
+          MAKE VOX-STYLE VIDEOS<br /><span>WITH ZERO VIDEO CREDITS</span>
+        </div>
+        <!-- Scene 2 Headline -->
+        <div class="headline" id="hl-2" style="opacity: 0; transform: translateY(20px);">
+          ENTER A SINGLE TOPIC<br /><em>FACT-CHECKS &amp; WRITES SCRIPT</em>
+        </div>
+        <!-- Scene 3 Headline -->
+        <div class="headline" id="hl-3" style="opacity: 0; transform: translateY(20px);">
+          FREE ARCHIVE PHOTOS<br /><span>AUTOMATIC SUBJECT CUTOUT</span>
+        </div>
+        <!-- Scene 4 Headline -->
+        <div class="headline" id="hl-4" style="opacity: 0; transform: translateY(20px);">
+          STOP-MOTION PHYSICS<br /><em>WITHOUT PAYING FOR A SINGLE CLIP</em>
+        </div>
+        <!-- Scene 5 Headline -->
+        <div class="headline" id="hl-5" style="opacity: 0; transform: translateY(20px);">
+          BUILT ON ONE COMPUTER<br /><span>ZERO SUBSCRIPTIONS</span>
+        </div>
+        <!-- Scene 6 Headline -->
+        <div class="headline" id="hl-6" style="opacity: 0; transform: translateY(20px);">
+          WANT THIS AGENT SKILL?<br /><em>COMMENT "VOX" BELOW</em>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           VOX COLLAGE MAIN STAGE
+           ======================================================== -->
+      <div class="stage-wrap" id="stage-wrap" data-layout-allow-overflow data-layout-allow-overlap data-layout-allow-occlusion>
+
+        <!-- ============ SCENE 1: MULTI-LANDMARK HOOK (0 - 6.2s) ============ -->
+        <div class="scene-layer" id="sc-1">
+          <!-- 1922 Survey Map Underlay -->
+          <img src="assets/map1922.jpg" alt="1922 Map" id="s1-map" data-start="0.0" data-duration="6.2" style="position: absolute; left: -100px; top: -100px; width: 1200px; height: 1400px; object-fit: cover; opacity: 0.35; mix-blend-mode: multiply;" data-layout-ignore />
+
+          <!-- Crimson Sun -->
+          <div class="red-sun" id="s1-sun" style="left: 220px; top: 120px;" data-layout-ignore></div>
+
+          <!-- Rashtrapati Bhavan Dome & Colonnade (Asset 1) -->
+          <img src="assets/cut_rashtrapati.png" alt="Rashtrapati Bhavan" class="cut" id="s1-rashtrapati" data-start="0.0" data-duration="6.2" style="left: -40px; top: 220px; width: 620px; z-index: 10;" />
+
+          <!-- Sansad Bhavan Circular Colonnade (Asset 2) -->
+          <img src="assets/cut_sansad.png" alt="Sansad Bhavan" class="cut" id="s1-sansad" data-start="0.0" data-duration="6.2" style="right: -40px; top: 380px; width: 560px; z-index: 11;" />
+
+          <!-- Newsprint Strip 1 -->
+          <div class="news-strip" id="s1-news1" style="left: 40px; top: 50px; width: 440px;" data-layout-ignore>
+            "ZERO CREDIT DOCUMENTARY ANIMATIONS FOR CREATORS..."
+          </div>
+
+          <!-- Newsprint Strip 2 -->
+          <div class="news-strip" id="s1-news2" style="right: 40px; top: 140px; width: 420px;" data-layout-ignore>
+            "FULL OPEN-SOURCE CLAUDE AGENT SKILL PIPELINE..."
+          </div>
+
+          <!-- India Gate Monument Arch Rising Center (Asset 3) -->
+          <img src="assets/cut_india_gate.png" alt="India Gate Arch" class="cut" id="s1-gate" data-start="0.0" data-duration="6.2" style="left: 120px; bottom: -30px; width: 720px; z-index: 15;" />
+
+          <!-- Yellow Title Tag -->
+          <div class="tag-pill yellow" id="s1-tag1" style="left: 80px; bottom: 320px; font-size: 32px; padding: 14px 28px;" data-layout-ignore>
+            VOX DOCUMENTARY ANIMATIONS
+          </div>
+
+          <!-- Slammed Stamp -->
+          <div class="stamp" id="s1-stamp" style="right: 60px; bottom: 120px;" data-layout-ignore>
+            ₹0 COST • NO CREDIT
+          </div>
+        </div>
+
+        <!-- ============ SCENE 2: WIKIPEDIA FACT-CHECK & ARCHITECTS (6.2 - 11.7s) ============ -->
+        <div class="scene-layer" id="sc-2" style="opacity: 0;">
+          <!-- Lutyens Original Sketch Blueprint (Asset 4) -->
+          <img src="assets/sketch_lutyens.jpg" alt="Lutyens Sketch Blueprint" id="s2-sketch" data-start="6.2" data-duration="5.5" style="position: absolute; left: 40px; top: 40px; width: 440px; height: 320px; object-fit: cover; border: 3px solid #E5DFD3; box-shadow: 0 10px 25px rgba(0,0,0,0.15);" data-layout-ignore />
+
+          <!-- Card Sheet -->
+          <div class="card-sheet" id="s2-card" style="right: 40px; top: 40px; width: 480px;" data-layout-ignore>
+            <div style="font-size: 16px; color: var(--crimson); font-weight: 800; margin-bottom: 6px;">[WIKIPEDIA FACT VERIFY]</div>
+            <div style="font-size: 20px; font-weight: 900; margin-bottom: 10px;">ALL-INDIA WAR MEMORIAL</div>
+            <div style="font-size: 17px; line-height: 1.6;">
+              • ARCHITECT: <span class="highlighter">Sir Edwin Lutyens</span><br />
+              • FOUNDATION: <span class="highlighter">10 Feb 1921</span><br />
+              • HEIGHT: <span class="highlighter">42 metres</span><br />
+              • HONOURS: <span class="highlighter">13,300 soldiers</span>
+            </div>
+          </div>
+
+          <!-- Duke of Connaught Cutout (Asset 5) -->
+          <img src="assets/cut_duke.png" alt="Duke of Connaught" class="cut" id="s2-duke" data-start="6.2" data-duration="5.5" style="left: 60px; bottom: 50px; width: 340px; z-index: 12;" />
+
+          <!-- Sir Edwin Lutyens Cutout (Asset 6) -->
+          <img src="assets/cut_lutyens.png" alt="Sir Edwin Lutyens" class="cut" id="s2-lutyens" data-start="6.2" data-duration="5.5" style="right: 60px; bottom: 50px; width: 340px; z-index: 12;" />
+
+          <!-- Marker SVG Ring around Lutyens -->
+          <svg style="position: absolute; right: 40px; bottom: 40px; width: 380px; height: 480px; z-index: 14; pointer-events: none;" data-layout-ignore>
+            <circle id="s2-mk-circle" class="mk-path" cx="190" cy="240" r="160" />
+          </svg>
+
+          <!-- Chief Architect Tag -->
+          <div class="tag-pill" id="s2-tag" style="right: 90px; bottom: 40px; font-size: 20px;" data-layout-ignore>
+            CHIEF ARCHITECT
+          </div>
+
+          <!-- Stamp -->
+          <div class="stamp" id="s2-stamp" style="left: 80px; bottom: 400px;" data-layout-ignore>
+            VERIFIED FACTS ✓
+          </div>
+        </div>
+
+        <!-- ============ SCENE 3: ARCHIVES & 13,300 SOLDIERS (11.7 - 18.5s) ============ -->
+        <div class="scene-layer" id="sc-3" style="opacity: 0;">
+          <!-- 1922 Survey Map Section -->
+          <img src="assets/map1922.jpg" alt="1922 Survey Map Section" id="s3-map" data-start="11.7" data-duration="6.8" style="position: absolute; left: 40px; top: 40px; width: 880px; height: 380px; object-fit: cover; border: 3px solid #E5DFD3; border-radius: 16px; opacity: 0.65; mix-blend-mode: multiply;" data-layout-ignore />
+
+          <div class="tag-pill crimson" id="s3-tag-commons" style="left: 70px; top: 60px;" data-layout-ignore>
+            PUBLIC DOMAIN ARCHIVES
+          </div>
+
+          <!-- WW1 Indian Cavalry Soldiers Cutout (Asset 7) -->
+          <img src="assets/cut_cavalry.png" alt="Indian Cavalry WW1" class="cut" id="s3-cavalry" data-start="11.7" data-duration="6.8" style="left: 40px; top: 440px; width: 880px; z-index: 14;" />
+
+          <!-- India Gate Cutout Rising (Asset 3) -->
+          <img src="assets/cut_india_gate.png" alt="India Gate Cutout" class="cut" id="s3-gate" data-start="11.7" data-duration="6.8" style="left: 140px; bottom: 30px; width: 680px; z-index: 18;" />
+
+          <!-- Scanner Bar Line -->
+          <div id="s3-scanline" style="position: absolute; left: 80px; width: 800px; height: 4px; background: var(--crimson); box-shadow: 0 0 16px var(--crimson); z-index: 22;" data-layout-ignore></div>
+
+          <!-- Apple Vision Badge -->
+          <div class="card-sheet" id="s3-card" style="right: 50px; bottom: 60px; width: 440px; border: 2px solid var(--crimson); z-index: 25;" data-layout-ignore>
+            <div style="color: var(--crimson); font-weight: 800; font-size: 16px;">NATIVE APPLE VISION</div>
+            <div style="font-size: 24px; font-weight: 900;">AUTOMATIC PAPER CUT</div>
+            <div style="font-size: 16px; color: #64748b; margin-top: 4px;">Zero cloud API • Zero tokens</div>
+          </div>
+        </div>
+
+        <!-- ============ SCENE 4: MULTI-MONUMENT STOP-MOTION STAGE (18.5 - 23.9s) ============ -->
+        <div class="scene-layer" id="sc-4" style="opacity: 0;">
+          <!-- Red Sun in Background -->
+          <div class="red-sun" id="s4-sun" style="left: 220px; top: 160px;" data-layout-ignore></div>
+
+          <!-- Qutub Minar Historical Tower (Asset 8) -->
+          <img src="assets/cut_qutub.png" alt="Qutub Minar" class="cut" id="s4-qutub" data-start="18.5" data-duration="5.4" style="left: 40px; bottom: 40px; width: 180px; z-index: 12;" />
+
+          <!-- Sansad Bhavan Colonnade in Back (Asset 2) -->
+          <img src="assets/cut_sansad.png" alt="Sansad Bhavan" class="cut" id="s4-sansad" data-start="18.5" data-duration="5.4" style="right: -20px; top: 180px; width: 500px; z-index: 10;" />
+
+          <!-- India Gate Front Stage (Asset 3) -->
+          <img src="assets/cut_india_gate.png" alt="India Gate Stage" class="cut" id="s4-gate" data-start="18.5" data-duration="5.4" style="left: 140px; bottom: 20px; width: 700px; z-index: 15;" />
+
+          <!-- Technical Specs Paper Strips -->
+          <div class="news-strip" id="s4-spec1" style="left: 240px; top: 80px; width: 340px; transform: rotate(-4deg);" data-layout-ignore>
+            9.1M ARCH SPAN<br />
+            BHARATPUR STONE
+          </div>
+          <div class="news-strip" id="s4-spec2" style="right: 60px; top: 120px; width: 320px; transform: rotate(5deg);" data-layout-ignore>
+            AMAR JAWAN JYOTI<br />
+            1921-1931 MEMORIAL
+          </div>
+
+          <!-- Stamp -->
+          <div class="stamp" id="s4-stamp" style="left: 60px; bottom: 140px;" data-layout-ignore>
+            60 FPS STOP-MOTION
+          </div>
+        </div>
+
+        <!-- ============ SCENE 5: ZERO SUBSCRIPTION COMPARISON (23.9 - 29.2s) ============ -->
+        <div class="scene-layer" id="sc-5" style="opacity: 0;">
+          <div style="position: absolute; top: 50px; left: 60px; right: 60px; text-align: center; font-size: 32px; font-weight: 900; color: #111827;" data-layout-ignore>
+            COST COMPARISON
+          </div>
+
+          <!-- Card 1: SaaS Cloud Tools -->
+          <div class="card-sheet" id="s5-card1" style="left: 60px; top: 130px; width: 840px; background: #FFF5F5; border: 2px dashed #EF4444;" data-layout-ignore>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 28px; font-weight: 900; color: #991B1B;">SaaS Video Subscriptions</div>
+                <div style="font-size: 20px; color: #B91C1C; margin-top: 6px;">Runway Gen-3 / Kling / Pika</div>
+              </div>
+              <div style="font-size: 36px; font-weight: 900; color: #DC2626;">₹8,000 / mo</div>
+            </div>
+            <!-- Red Stamp Slam -->
+            <div class="stamp" id="s5-stamp-cancel" style="position: relative; margin-top: 20px; display: inline-block; border-color: #DC2626; color: #DC2626;">
+              CANCELLED ✕
+            </div>
+          </div>
+
+          <!-- Card 2: Open Source Claude Agent Skill -->
+          <div class="card-sheet" id="s5-card2" style="left: 60px; top: 480px; width: 840px; background: #F0FDF4; border: 2px solid #22C55E;" data-layout-ignore>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 28px; font-weight: 900; color: #166534;">Claude Vox Agent Skill</div>
+                <div style="font-size: 20px; color: #15803D; margin-top: 6px;">Apple Vision + Commons Archives</div>
+              </div>
+              <div style="font-size: 38px; font-weight: 900; color: #16A34A;">₹0 / FREE</div>
+            </div>
+            <!-- Green Verified Stamp -->
+            <div class="stamp" id="s5-stamp-verify" style="position: relative; margin-top: 20px; display: inline-block; border-color: #16A34A; color: #16A34A;">
+              100% OPEN SOURCE ✓
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SCENE 6: GRAND CTA FINALE (29.2 - 40.00s) ============ -->
+        <div class="cta-screen" id="sc-6" style="opacity: 0;">
+          <div class="cta-hook-label">Get the <em>Claude Skill</em></div>
+          <div class="comment-pill-btn" id="s6-btn">
+            <span class="comment-text">Comment</span>
+            <span class="vox-badge">VOX</span>
+          </div>
+          <div class="github-pill" id="s6-pill">
+            <span class="github-dot"></span>
+            <span>free agent skill • GitHub • @sidmanutech</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM SUBTITLES -->
+      <div class="subtitle-dock">
+        <div class="subtitle-box" id="sub-box">
+          Vox-style documentary animations banane ke liye
+        </div>
+      </div>
+    </div>
+
+    <!-- GSAP MASTER ANIMATION SCRIPT -->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const tl = gsap.timeline({ paused: true });
+
+        // Register with HyperFrames
+        window.__timelines = window.__timelines || {};
+        window.__timelines["vox-reel"] = tl;
+        window.__hf_timeline = tl;
+        window.__hf_duration = 40.00;
+
+        // STOP-MOTION HELPERS (Official Vox Kit Engine)
+        const sm = (base, d) => {
+          const e = gsap.parseEase(base), n = Math.max(1, Math.round(d * 12));
+          return (p) => e(p >= 1 ? 1 : Math.floor(p * n) / n);
+        };
+
+        const enter = (sel, at, from, d, base) => {
+          d = d || 0.42;
+          const endRot = (from && from.end !== undefined) ? from.end : 0;
+          const cleanFrom = Object.assign({}, from);
+          delete cleanFrom.end;
+          tl.fromTo(sel,
+            Object.assign({ opacity: 1 }, cleanFrom),
+            { opacity: 1, x: 0, y: 0, rotation: endRot, scale: 1, duration: d, ease: sm(base || "back.out(1.4)", d), immediateRender: false },
+            at
+          );
+        };
+
+        const pop = (sel, at, r) => {
+          tl.fromTo(sel,
+            { opacity: 0, scale: 0.6, rotation: r || 0 },
+            { opacity: 1, scale: 1, rotation: 0, duration: 0.28, ease: sm("back.out(2.4)", 0.28), immediateRender: false },
+            at
+          );
+        };
+
+        const slam = (sel, at, rot) => {
+          tl.fromTo(sel,
+            { opacity: 0, scale: 2.2, rotation: (rot || 0) + 10 },
+            { opacity: 1, scale: 1, rotation: rot || 0, duration: 0.24, ease: "power4.in", immediateRender: false },
+            at
+          );
+        };
+
+        const draw = (sel, at, d) => {
+          const el = document.querySelector(sel);
+          if (el) {
+            const L = el.getTotalLength ? el.getTotalLength() : 1000;
+            tl.fromTo(sel,
+              { strokeDasharray: L, strokeDashoffset: L, opacity: 1 },
+              { strokeDashoffset: 0, opacity: 1, duration: d, ease: "power1.inOut", immediateRender: false },
+              at
+            );
+          }
+        };
+
+        // 12FPS PAPER BOIL (Vibrates cutouts & grain every 1/12th second)
+        const boil = (DUR) => {
+          const bits = Array.from(document.querySelectorAll(".cut, .stamp, .tag-pill, .news-strip, .card-sheet"));
+          const h = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x) - 0.5; };
+          const c = { t: 0 };
+          tl.fromTo(c,
+            { t: 0 },
+            { t: DUR, duration: DUR, ease: "none", immediateRender: true, onUpdate: () => {
+              const k = Math.floor(c.t * 12);
+              bits.forEach((el, i) => {
+                el.style.translate = (h(i, k) * 2.5).toFixed(2) + "px " + (h(i + 50, k) * 2.5).toFixed(2) + "px";
+                el.style.rotate = (h(i + 99, k) * 0.8).toFixed(2) + "deg";
+              });
+              const g = document.getElementById("grain");
+              if (g) g.style.translate = Math.round(h(1, k) * 50) + "px " + Math.round(h(2, k) * 50) + "px";
+            } },
+            0
+          );
+        };
+
+        boil(40.00);
+
+        // SCENE PROGRESSION
+        const scenes = [
+          { id: '#sc-1', hl: '#hl-1', badge: 'VOX ANIMATION ENGINE', start: 0.0, end: 6.2 },
+          { id: '#sc-2', hl: '#hl-2', badge: 'FACTS & SCRIPT GENERATION', start: 6.2, end: 11.7 },
+          { id: '#sc-3', hl: '#hl-3', badge: 'COMMONS ARCHIVE SEARCH', start: 11.7, end: 18.5 },
+          { id: '#sc-4', hl: '#hl-4', badge: 'APPLE VISION CUTOUT', start: 18.5, end: 23.9 },
+          { id: '#sc-5', hl: '#hl-5', badge: 'ZERO SUBSCRIPTIONS', start: 23.9, end: 29.2 },
+          { id: '#sc-6', hl: '#hl-6', badge: 'OPEN SOURCE GITHUB', start: 29.2, end: 40.00 }
+        ];
+
+        // Animate headlines and badges
+        scenes.forEach((sc, i) => {
+          tl.to(sc.id, { opacity: 1, duration: 0.25, ease: 'power2.out' }, sc.start);
+          tl.to(sc.hl, { opacity: 1, y: 0, duration: 0.45, ease: 'back.out(1.4)' }, sc.start + 0.08);
+          tl.call(() => {
+            const badge = document.getElementById('badge-text');
+            if (badge) badge.innerText = sc.badge;
+          }, null, sc.start);
+
+          if (i < scenes.length - 1) {
+            tl.to(sc.id, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.end - 0.25);
+            tl.to(sc.hl, { opacity: 0, y: -15, duration: 0.2, ease: 'power2.in' }, sc.end - 0.2);
+          }
+        });
+
+        /* ========================================================
+           SCENE 1: MULTI-LANDMARK HOOK (0.0 - 6.2s)
+           ======================================================== */
+        tl.fromTo("#s1-map", { scale: 1.05, x: 0 }, { scale: 1.0, x: -60, duration: 6.0, ease: "none" }, 0);
+        pop("#s1-sun", 0.15, 0);
+        enter("#s1-rashtrapati", 0.35, { x: -600, rotation: -8, end: -3 }, 0.5, "back.out(1.3)");
+        enter("#s1-sansad", 0.65, { x: 600, rotation: 8, end: 2 }, 0.5, "back.out(1.3)");
+        enter("#s1-news1", 0.95, { y: -300, rotation: -12, end: -4 }, 0.4);
+        enter("#s1-news2", 1.25, { y: -300, rotation: 14, end: 5 }, 0.4);
+        enter("#s1-gate", 1.55, { y: 600, rotation: -3, end: 0 }, 0.65, "back.out(1.2)");
+        pop("#s1-tag1", 2.1, -5);
+        slam("#s1-stamp", 2.5, -12);
+
+        /* ========================================================
+           SCENE 2: WIKIPEDIA FACT-CHECK & ARCHITECTS (6.2 - 11.7s)
+           ======================================================== */
+        enter("#s2-sketch", 6.35, { x: -500, rotation: -10, end: -3 }, 0.45);
+        enter("#s2-card", 6.65, { y: -600, rotation: 6, end: 1 }, 0.5);
+        enter("#s2-duke", 7.15, { x: -400, rotation: -8, end: 0 }, 0.5);
+        enter("#s2-lutyens", 7.55, { x: 400, rotation: 10, end: 0 }, 0.5);
+        draw("#s2-mk-circle", 8.1, 0.5);
+        pop("#s2-tag", 8.6, 4);
+        slam("#s2-stamp", 9.1, -8);
+
+        /* ========================================================
+           SCENE 3: ARCHIVES & 13,300 SOLDIERS (11.7 - 18.5s)
+           ======================================================== */
+        enter("#s3-map", 11.85, { scale: 0.8, y: -200, rotation: 3 }, 0.45);
+        pop("#s3-tag-commons", 12.2, -5);
+        enter("#s3-cavalry", 12.5, { y: 500, rotation: -4, end: 0 }, 0.6, "back.out(1.2)");
+        tl.fromTo("#s3-scanline",
+          { y: 60, opacity: 0 },
+          { y: 520, opacity: 1, duration: 1.1, ease: "power1.inOut" },
+          13.2
+        );
+        tl.to("#s3-scanline", { opacity: 0, duration: 0.2 }, 14.3);
+        enter("#s3-gate", 14.2, { y: 500, scale: 0.8, rotation: -5, end: 0 }, 0.65, "back.out(1.4)");
+        enter("#s3-card", 15.0, { x: 500, rotation: 8, end: 0 }, 0.5);
+
+        /* ========================================================
+           SCENE 4: MULTI-MONUMENT STOP-MOTION (18.5 - 23.9s)
+           ======================================================== */
+        pop("#s4-sun", 18.6, 0);
+        tl.fromTo("#s4-sun", { scale: 0.95 }, { scale: 1.08, duration: 4.8, ease: "sine.inOut" }, 18.8);
+        enter("#s4-qutub", 18.85, { x: -300, rotation: -6, end: -2 }, 0.5, "back.out(1.3)");
+        enter("#s4-sansad", 19.15, { x: 400, rotation: 8, end: 3 }, 0.5, "back.out(1.3)");
+        enter("#s4-gate", 19.45, { scale: 0.85, y: 150 }, 0.55, "back.out(1.3)");
+        pop("#s4-spec1", 19.9, -4);
+        pop("#s4-spec2", 20.3, 5);
+        slam("#s4-stamp", 20.8, -10);
+
+        /* ========================================================
+           SCENE 5: ZERO SUBSCRIPTION COMPARISON (23.9 - 29.2s)
+           ======================================================== */
+        enter("#s5-card1", 24.1, { x: -900, rotation: -6, end: -2 }, 0.48);
+        slam("#s5-stamp-cancel", 24.8, -14);
+        enter("#s5-card2", 25.5, { x: 900, rotation: 6, end: 1 }, 0.48);
+        slam("#s5-stamp-verify", 26.3, 4);
+
+        /* ========================================================
+           SCENE 6: GRAND CTA FINALE (29.2 - 40.00s)
+           ======================================================== */
+        pop("#s6-btn", 29.5, 0);
+        tl.to("#s6-btn", { scale: 1.05, yoyo: true, repeat: 7, duration: 0.75, ease: "sine.inOut" }, 30.0);
+        pop("#s6-pill", 30.6, 0);
+
+        // SUBTITLES MAPPING (Locked to ElevenLabs Sid Voice)
+        const subBox = document.getElementById('sub-box');
+        const subtitles = [{"start": 0.0, "end": 2.7, "text": "Vox-style documentary animations banane ke liye"}, {"start": 2.7, "end": 6.2, "text": "aapko ek bhi video credit kharch karne ki zaroorat nahi hai."}, {"start": 6.2, "end": 7.6, "text": "Ek single topic daalo —"}, {"start": 7.6, "end": 11.7, "text": "ye Claude skill pehle facts check karta hai aur solid script likhta hai."}, {"start": 11.7, "end": 14.7, "text": "Phir automatically free archive photos dhoondta hai,"}, {"start": 14.7, "end": 18.5, "text": "aur Mac ke Apple Vision se paper ki tarah cut kar deta hai."}, {"start": 18.5, "end": 22.2, "text": "Stop-motion movement ke saath har ek piece ko animate karta hai —"}, {"start": 22.2, "end": 23.9, "text": "without paying for a single clip."}, {"start": 23.9, "end": 27.4, "text": "Ye saare films humne ek hi computer par banaye hain,"}, {"start": 27.4, "end": 29.2, "text": "zero monthly subscriptions ke saath."}, {"start": 29.2, "end": 31.9, "text": "Skill chahiye? Neeche comment karo 'VOX',"}, {"start": 31.9, "end": 35.2, "text": "aur main pura code aur setup guide aapko DM kar dunga."}, {"start": 35.2, "end": 40.0, "text": "Aise local workflows ke liye, follow karo Sid Manu Tech!"}];
+
+        subtitles.forEach((sub) => {
+          tl.call(() => {
+            if (subBox) {
+              subBox.innerHTML = sub.text.replace(
+                /\b(Vox-style|video credit|Claude skill|facts|script|archive photos|Apple Vision|stop-motion|without paying|zero monthly subscriptions|VOX|Sid Manu Tech)\b/gi,
+                '<span class="highlight">$1</span>'
+              );
+            }
+          }, null, sub.start);
+        });
+      });
+    </script>
+  </body>
+</html>
